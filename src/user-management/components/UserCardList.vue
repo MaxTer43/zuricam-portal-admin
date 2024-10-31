@@ -69,7 +69,8 @@
             color="secondary"
             required
             v-model.trim="user.username"
-            :rules="[rules.required, rules.validString]"
+            @keydown="preventSpace"
+            :rules="[rules.required, rules.validUsername]"
           ></TextFieldUppercase>
           <TextFieldUppercase
             density="compact"
@@ -78,6 +79,7 @@
             color="secondary"
             required
             v-model="user.firstName"
+            @input="onInput1"
             :rules="[rules.required, rules.validString]"
           ></TextFieldUppercase>
           <TextFieldUppercase
@@ -87,6 +89,7 @@
             color="secondary"
             required
             v-model="user.lastName"
+            @input="onInput2"
             :rules="[rules.required, rules.validString]"
           ></TextFieldUppercase>
           <v-text-field
@@ -102,7 +105,6 @@
           <TextFieldUppercase
             density="compact"
             placeholder="correo@gmail.com"
-            type="email"
             label="Correo*"
             variant="outlined"
             color="secondary"
@@ -144,7 +146,9 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text="Cerrar" variant="plain" @click="userDialog = false"></v-btn>
-          <v-btn color="primary" :loading="isSubmitting" class="mt-2" variant="tonal" :disabled="!isFormValid" type="submit"> Guardar </v-btn>
+          <v-btn color="primary" :loading="isSubmitting" class="mt-2" variant="tonal" :disabled="!isFormValid" type="submit">
+            Guardar
+          </v-btn>
         </v-card-actions>
       </v-card>
     </Form>
@@ -174,6 +178,18 @@ const newUser: CreateUserModel = {
   username: '',
   isActive: true
 };
+const onInput1 = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  // Reemplaza múltiples espacios consecutivos por un solo espacio y mantiene la longitud a 15 caracteres
+  user.value.firstName = value.replace(/\s+/g, ' ').slice(0, 40);
+};
+const onInput2 = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  // Reemplaza múltiples espacios consecutivos por un solo espacio y mantiene la longitud a 15 caracteres
+  user.value.lastName = value.replace(/\s+/g, ' ').slice(0, 40);
+};
 const userResource = ref<CreateUserModel | null>(null);
 const user = ref<CreateUserModel & { id?: number }>(newUser);
 const isFormValid = computed(() => {
@@ -197,15 +213,30 @@ const toggleActive = computed({
     user.value.isActive = value === 'true'; // Convierte a booleano
   }
 });
+/*const onInput = (event) => {
+  const value = event.target.value; // Obtiene el valor del evento
+  // Elimina espacios y limita a 15 caracteres
+  user.value.username = String(value).replace(/\s+/g, '').slice(0, 15).toUpperCase();
+};*/
+const preventSpace = (event: any) => {
+  if (event.key === ' ') {
+    event.preventDefault();
+  }
+};
 const rules = {
   required: (value: string) => !!value || 'Este campo es requerido.',
   dniLength: (value: string) => (value && value.length === 8) || 'El DNI debe tener exactamente 8 dígitos.',
   validEmail: (value: string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(value) || 'Ingrese un correo válido.';
+    return pattern.test(value) || 'Ingrese un correo válido por ejemplo correo@mail.com.';
   },
   validString: (value: string) => {
     const pattern = /^[a-zA-Z\s ]+$/; // Solo letras de la 'a' a la 'z' (mayúsculas y minúsculas)
+    return pattern.test(value) || 'Ingrese solo letras (a-z, A-Z).';
+  },
+  validUsername: (value: string) => {
+    const pattern = /^[a-zA-Z\s ]+$/;
+    if (value.length > 20) return 'El usuario no puede tener mas de 20 dígitos'; // Solo letras de la 'a' a la 'z' (mayúsculas y minúsculas)
     return pattern.test(value) || 'Ingrese solo letras (a-z, A-Z).';
   }
 };
