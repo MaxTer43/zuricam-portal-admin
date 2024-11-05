@@ -62,7 +62,7 @@
     <Form @submit="validate" class="mt-7 loginForm" v-slot="{ errors, isSubmitting }">
       <v-card prepend-icon="mdi-account" title="Perfil de usuario">
         <v-card-text>
-          <TextFieldUppercase
+          <v-text-field
             density="compact"
             label="Usuario*"
             variant="outlined"
@@ -71,7 +71,7 @@
             v-model.trim="user.username"
             @keydown="preventSpace"
             :rules="[rules.required, rules.validUsername]"
-          ></TextFieldUppercase>
+          ></v-text-field>
           <TextFieldUppercase
             density="compact"
             label="Nombres*"
@@ -102,7 +102,7 @@
             v-model.trim="user.dni"
             :rules="[rules.required, rules.dniLength]"
           ></v-text-field>
-          <TextFieldUppercase
+          <v-text-field
             density="compact"
             placeholder="correo@gmail.com"
             label="Correo*"
@@ -111,7 +111,7 @@
             required
             v-model.trim="user.email"
             :rules="[rules.required, rules.validEmail]"
-          ></TextFieldUppercase>
+          ></v-text-field>
 
           <v-select
             density="compact"
@@ -336,7 +336,7 @@ function validate(values: any, { setErrors }: any) {
     username: user.value.username,
     firstName: user.value.firstName,
     lastName: user.value.lastName,
-    email: user.value.email,
+    email: user.value.email.toUpperCase(),
     dni: user.value.dni,
     headquarter: '0',
     permissions: user.value.permissions || [],
