@@ -4,7 +4,6 @@ import { ref } from 'vue';
 //import { useAuthStore } from '@/stores/auth';
 import { useAuthStore } from '@/security-management/stores/auth-store';
 import { Form } from 'vee-validate';
-import TextFieldUppercase from "@/components/shared/TextFieldUppercase.vue";
 
 const valid = ref(false);
 const show1 = ref(false);
@@ -21,7 +20,7 @@ const emailRules = ref([(v: string) => !!v || 'Se requiere correo', (v: string) 
 function validate(values: any, { setErrors }: any) {
   const authStore = useAuthStore();
 
-  return authStore.login({ email: username.value, password: password.value }).catch((error) => {
+  return authStore.login({ email: username.value.toUpperCase(), password: password.value }).catch((error) => {
     if (error.response) {
       setErrors({ apiError: error.response.data.detail });
     } else {
@@ -41,9 +40,8 @@ function validate(values: any, { setErrors }: any) {
     </v-col>
   </v-row>
   <Form @submit="validate" class="mt-7 loginForm" v-slot="{ errors, isSubmitting }">
-    <TextFieldUppercase
+    <v-text-field
       v-model="username"
-      :rules="emailRules"
       label="Correo Electrónico / Usuario"
       class="mt-4 mb-8"
       required
@@ -51,7 +49,9 @@ function validate(values: any, { setErrors }: any) {
       hide-details="auto"
       variant="outlined"
       color="primary"
-    ></TextFieldUppercase>
+      :rules="emailRules"
+    >
+    </v-text-field>
     <v-text-field
       v-model="password"
       :rules="passwordRules"
