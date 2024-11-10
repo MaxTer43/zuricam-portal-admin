@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-
-//import { useAuthStore } from '@/stores/auth';
 import { useAuthStore } from '@/security-management/stores/auth-store';
 import { Form } from 'vee-validate';
 
+const downloadLink = import.meta.env.VITE_DOWNLOAD_LINK;
 const valid = ref(false);
 const show1 = ref(false);
-//const logform = ref();
 const password = ref('');
 const username = ref('');
-const passwordRules = ref([
-  (v: string) => !!v || 'Se requiere contraseña',
-  (v: string) => (v && v.length <= 13) || 'Password must be less than 10 characters'
-]);
+const passwordRules = ref([(v: string) => !!v || 'Se requiere contraseña']);
 const emailRules = ref([(v: string) => !!v || 'Se requiere correo', (v: string) => /.+@.+\..+/.test(v) || 'El correo debe ser válido']);
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -50,8 +45,7 @@ function validate(values: any, { setErrors }: any) {
       variant="outlined"
       color="primary"
       :rules="emailRules"
-    >
-    </v-text-field>
+    ></v-text-field>
     <v-text-field
       v-model="password"
       :rules="passwordRules"
@@ -71,7 +65,7 @@ function validate(values: any, { setErrors }: any) {
     <v-btn color="secondary" :loading="isSubmitting" block class="mt-2" variant="flat" size="large" :disabled="valid" type="submit">
       Iniciar Sesión
     </v-btn>
-    <a href="http://www.mediafire.com/file/0yom6m5r76m4qkw/ZuriCam.7z" target="_blank" style="text-decoration: none">
+    <a :href="downloadLink" target="_blank" style="text-decoration: none">
       <h5 class="text-h5 text-center my-4 mb-8">Descargar aplicación de monitoreo</h5>
     </a>
 
@@ -83,6 +77,7 @@ function validate(values: any, { setErrors }: any) {
     <v-divider />
   </div>
 </template>
+
 <style lang="scss">
 .custom-devider {
   border-color: rgba(0, 0, 0, 0.08) !important;
