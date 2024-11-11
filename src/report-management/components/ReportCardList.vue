@@ -130,12 +130,14 @@ const dataFilterWithDates = () => {
     showSnackbarError('Por favor, selecciona ambas fechas.');
   } else if (end < start) {
     showSnackbarError('La fecha de fin no puede ser anterior a la fecha de inicio.');
-  } else if (start > today || end > today) {
+  } else if (start >= today || end >= today) {
     showSnackbarError('Las fechas no pueden ser mayores a la fecha actual.');
   } else {
+    const adjustedEnd = new Date(end);
+    adjustedEnd.setDate(adjustedEnd.getDate() + 1);
     reports.value = allReports.value.filter((report) => {
       const reportDate = new Date(report.createdAt);
-      return reportDate >= start && reportDate <= end;
+      return reportDate >= start && reportDate <= adjustedEnd;
     });
     // Reinicia los campos de fecha después de filtrar
     startDate.value = '';
